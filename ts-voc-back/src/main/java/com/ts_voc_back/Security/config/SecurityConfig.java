@@ -1,11 +1,17 @@
 package com.ts_voc_back.Security.config;
 
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import com.ts_voc_back.Security.dto.AuthFailureHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -18,22 +24,23 @@ public class SecurityConfig {
 
 	@Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-//		http.csrf((auth) -> auth.disable());
+		AuthFailureHandler authFailureHandler = new AuthFailureHandler();
+		
+		http.csrf((auth) -> auth.disable());
 
         http.authorizeHttpRequests((auth) -> auth
-    		.requestMatchers("/login", "/loginProc", "/join", "/joinProc").permitAll()
-    		.requestMatchers("/admin").hasRole("ADMIN")
-    		.requestMatchers("/success").hasRole("USER")
+    		.requestMatchers("/api/loginProc", "/api/joinProc").permitAll()
+    		.requestMatchers("/api/admin/**").hasAnyRole("ADMIN")
+    		.requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
     		.anyRequest().authenticated()
         );
 
         http.formLogin((auth) -> auth
-        	.loginPage("/login")
         	.usernameParameter("loginId")
         	.passwordParameter("pwd")
-        	.loginProcessingUrl("/loginProc")
-        	.defaultSuccessUrl("/loginOk")
+        	.loginProcessingUrl("/api/loginProc")
+        	.defaultSuccessUrl("/api/loginOk")
+        	.failureHandler(authFailureHandler)
         );
 
         http.sessionManagement( auth -> auth
@@ -46,5 +53,19 @@ public class SecurityConfig {
         );
 
         return http.build();
+    }
+	
+	@Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("http://localhost:3000");// 리액트 서버
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return new CorsFilter(source);
     }
 }

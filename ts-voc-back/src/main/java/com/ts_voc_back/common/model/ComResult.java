@@ -15,11 +15,14 @@ public class ComResult<T> {
     /* 예외처리(오류) */
     private Exception exception;
     
+    public ComResult() {
+	}
+    
     public ComResult(Object param) {
         this.param = param;
     }
 
-    public String getResultCode() {
+	public String getResultCode() {
         return resultCode;
     }
 

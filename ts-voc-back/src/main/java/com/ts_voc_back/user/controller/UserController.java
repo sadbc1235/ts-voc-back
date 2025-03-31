@@ -12,9 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,9 +58,10 @@ public class UserController {
         		+ "</html>";
     }
 
-	@GetMapping("/loginOk")
-    public ResponseEntity<Map<String, String>> loginOk() {
-
+	@GetMapping("/api/loginOk")
+    public ComResult<Map<String, String>> loginOk() {
+		ComResult<Map<String, String>> result = new ComResult<Map<String, String>>();
+		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String loginId = authentication.getName();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -65,21 +69,22 @@ public class UserController {
         for(GrantedAuthority auth : authorities) {
         	roleList.add(auth.getAuthority());
         }
-
         Map<String, String> userInfo = new HashMap<>();
-        System.out.println("로그인한 유저 loginId:" + loginId);
         for(String role : roleList) {
-        	System.out.println("유저 권한:" + role);
         	userInfo.put("role", role);
         }
-
-
-
         userInfo.put("loginId", loginId);
-
-        return ResponseEntity.ok(userInfo);
+        
+        result.setSuccess(userInfo);
+        return result;
     }
 
+	@GetMapping("/api/loginFail")
+    public ComResult<Map<String, String>> loginFail(@RequestParam("error") String errorMsg) {
+		ComResult<Map<String, String>> result = new ComResult<Map<String, String>>();
+		result.setFail(errorMsg);
+        return result;
+    }
 
 	@GetMapping("/join")
     public String joinP() {
@@ -93,7 +98,7 @@ public class UserController {
         		+ "</form>";
     }
 
-	@PostMapping("/joinProc")
+	@PostMapping("/api/joinProc")
 	@ResponseBody
     public ComResult<Integer> joinProc(
 			HttpServletRequest req
