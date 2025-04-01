@@ -6,7 +6,7 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.ts_voc_back.user.model.result.RSelectUserInfo;
+import com.ts_voc_back.user.login.model.result.RSelectUserInfo;
 
 public class CustomUserDetails implements UserDetails {
 

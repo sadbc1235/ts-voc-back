@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ts_voc_back.user.login.mapper.LoginMapper">
+
+	<select id="selectUserInfo"
+			parameterType="com.ts_voc_back.user.login.model.param.PSelectUserInfo"
+			resultType="com.ts_voc_back.user.login.model.result.RSelectUserInfo"
+	>
+		SELECT
+			user_seq	AS userSeq
+			, login_id	AS loginId
+			, user_name	AS userName
+			, pwd
+			, email
+			, role
+		FROM	t_user
+		WHERE	login_id	= #{loginId}
+	</select>
+</mapper>

@@ -7,9 +7,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.ts_voc_back.Security.dto.CustomUserDetails;
-import com.ts_voc_back.user.mapper.UserMapper;
-import com.ts_voc_back.user.model.param.PSelectUserInfo;
-import com.ts_voc_back.user.model.result.RSelectUserInfo;
+import com.ts_voc_back.user.login.mapper.LoginMapper;
+import com.ts_voc_back.user.login.model.param.PSelectUserInfo;
+import com.ts_voc_back.user.login.model.result.RSelectUserInfo;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,14 +17,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityService implements UserDetailsService {
 	@Autowired
-	final UserMapper userMapper = null;
+	final LoginMapper loginMapper = null;
 
 	@Override
 	public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
 		try {
 			PSelectUserInfo pSelectUserInfo = new PSelectUserInfo();
 			pSelectUserInfo.setLoginId(loginId);
-			RSelectUserInfo userInfo = userMapper.selectUserInfo(pSelectUserInfo);
+			RSelectUserInfo userInfo = loginMapper.selectUserInfo(pSelectUserInfo);
 
 			if(userInfo == null) {
 				throw new UsernameNotFoundException("User not found with loginId: " + loginId);

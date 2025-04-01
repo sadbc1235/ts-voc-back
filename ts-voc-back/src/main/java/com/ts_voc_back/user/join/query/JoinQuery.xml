@@ -1,24 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ts_voc_back.user.mapper.UserMapper">
-
-	<select id="selectUserInfo"
-			parameterType="com.ts_voc_back.user.model.param.PSelectUserInfo"
-			resultType="com.ts_voc_back.user.model.result.RSelectUserInfo"
-	>
-		SELECT
-			user_seq	AS userSeq
-			, login_id	AS loginId
-			, user_name	AS userName
-			, pwd
-			, email
-			, role
-		FROM	t_user
-		WHERE	login_id	= #{loginId}
-	</select>
-
+<mapper namespace="com.ts_voc_back.user.join.JoinMapper">
 	<select id="selectExistUser"
-			parameterType="com.ts_voc_back.user.model.param.PInsertUser"
+			parameterType="com.ts_voc_back.user.join.model.param.PInsertUser"
 			resultType="string"
 	>
 		SELECT
@@ -28,7 +12,7 @@
 	</select>
 
 	<insert id="insertUser"
-			parameterType="com.ts_voc_back.user.model.param.PInsertUser"
+			parameterType="com.ts_voc_back.user.join.model.param.PInsertUser"
 	>
 		INSERT INTO t_user (
 			login_id

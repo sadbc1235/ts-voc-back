@@ -1,0 +1,77 @@
+package com.ts_voc_back.user.join.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.ts_voc_back.Security.dto.ValidationParam;
+import com.ts_voc_back.common.model.ComResult;
+import com.ts_voc_back.user.join.mapper.JoinMapper;
+import com.ts_voc_back.user.join.model.param.PInsertUser;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class JoinService {
+
+	@Autowired
+	final JoinMapper joinMapper = null;
+	@Autowired
+	final BCryptPasswordEncoder bCryptPasswordEncoder = null;
+
+	/**
+	 * 사용자 정보 생성
+	 * @param pInsertUser
+	 * @return
+	 */
+	public ComResult<Integer> insertUser(PInsertUser pInsertUser) {
+		ComResult<Integer> result = new ComResult<Integer>(pInsertUser);
+
+		try {
+			ValidationParam validationParam = new ValidationParam();
+			// 공통 체크 (특수 문자 및 sql 인젝션 체크)
+
+			// id 체크
+			if(pInsertUser.getLoginId().trim().length() < 4 || pInsertUser.getLoginId().trim().length() > 12) {
+				result.setFail("아이디는 4글자 이상, 12글자 이하로 입력해주세요.");
+				return result;
+			}
+			if(validationParam.checkKor(pInsertUser.getLoginId())) {
+				result.setFail("아이디는 영어, 숫자로만 입력해주세요.");
+				return result;
+			}
+			// pw 체크
+			if(pInsertUser.getPwd().trim().length() < 8) {
+				result.setFail("비밀번호는 8글자 이상 입력해주세요.");
+				return result;
+			}
+			// email 체크
+			if(validationParam.checkEmail(pInsertUser.getEmail())) {
+				result.setFail("Email 주소를 확인해 주세요.");
+				return result;
+			}
+			// role 체크
+			if(pInsertUser.getRole() != null) {
+				result.setFail("어디서 장난질이고...");
+				return result;
+			}
+
+			// DB에 동일한 loginId 가 있는지 확인
+			String existLoginId = joinMapper.selectExistUser(pInsertUser);
+			if(existLoginId.equals("Y")) {
+				result.setFail("이미 가입되어 있는 아이디 입니다.");
+				return result;
+			}
+
+			pInsertUser.setPwd(bCryptPasswordEncoder.encode(pInsertUser.getPwd()));
+			pInsertUser.setRole("ROLE_USER");
+
+			result.setSuccess(joinMapper.insertUser(pInsertUser));
+		} catch(Exception ex) {
+			result.setError(ex);
+		}
+
+		return result;
+	}
+}

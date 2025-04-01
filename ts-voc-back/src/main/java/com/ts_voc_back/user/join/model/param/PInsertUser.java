@@ -1,4 +1,4 @@
-package com.ts_voc_back.user.model.result;
+package com.ts_voc_back.user.join.model.param;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,20 +7,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class RSelectUserInfo {
-	private String userSeq;
+public class PInsertUser {
 	private String loginId;
 	private String userName;
 	private String pwd;
 	private String email;
 	private String role;
 
-	public String getUserSeq() {
-		return userSeq;
-	}
-	public void setUserSeq(String userSeq) {
-		this.userSeq = userSeq;
-	}
 	public String getLoginId() {
 		return loginId;
 	}

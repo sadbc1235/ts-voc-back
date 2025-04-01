@@ -14,3 +14,5 @@ server:
   servlet:
     session:
       timeout: 90m
+
+  address: 127.0.0.1

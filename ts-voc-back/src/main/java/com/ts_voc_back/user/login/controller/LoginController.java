@@ -1,4 +1,4 @@
-package com.ts_voc_back.user.controller;
+package com.ts_voc_back.user.login.controller;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,30 +14,22 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ts_voc_back.common.model.ComResult;
-import com.ts_voc_back.user.model.param.PInsertUser;
-import com.ts_voc_back.user.service.UserService;
+import com.ts_voc_back.user.login.service.LoginService;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class UserController {
+public class LoginController {
 	@Autowired
-	final UserService userService= null;
+	final LoginService loginService = null;
 
 	@GetMapping("/login")
     public String loginP() {
-
         return "<html>\r\n"
         		+ "<head>\r\n"
         		+ "    <meta charset=\"UTF-8\">\r\n"
@@ -58,25 +50,32 @@ public class UserController {
         		+ "</html>";
     }
 
-	@GetMapping("/api/loginOk")
+	@GetMapping("/api/loginCheck")
     public ComResult<Map<String, String>> loginOk() {
 		ComResult<Map<String, String>> result = new ComResult<Map<String, String>>();
-		
+
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String loginId = authentication.getName();
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        List<String> roleList = new ArrayList<>();
-        for(GrantedAuthority auth : authorities) {
-        	roleList.add(auth.getAuthority());
-        }
-        Map<String, String> userInfo = new HashMap<>();
-        for(String role : roleList) {
-        	userInfo.put("role", role);
-        }
-        userInfo.put("loginId", loginId);
-        
-        result.setSuccess(userInfo);
-        return result;
+		Object principal = authentication.getPrincipal();
+		System.out.println("principal : "+principal);
+		if(principal.equals("anonymousUser")) {
+			result.setFail("세션이 만료 되었습니다.");
+			return result;
+		} else {
+			String loginId = authentication.getName();
+	        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+	        List<String> roleList = new ArrayList<>();
+	        for(GrantedAuthority auth : authorities) {
+	        	roleList.add(auth.getAuthority());
+	        }
+	        Map<String, String> userInfo = new HashMap<>();
+	        for(String role : roleList) {
+	        	userInfo.put("role", role);
+	        }
+	        userInfo.put("loginId", loginId);
+
+	        result.setSuccess(userInfo);
+	        return result;
+		}
     }
 
 	@GetMapping("/api/loginFail")
@@ -84,27 +83,5 @@ public class UserController {
 		ComResult<Map<String, String>> result = new ComResult<Map<String, String>>();
 		result.setFail(errorMsg);
         return result;
-    }
-
-	@GetMapping("/join")
-    public String joinP() {
-
-        return "<form action=\"/joinProc\" method=\"post\" name=\"joinForm\">\r\n"
-        		+ "    <input type=\"text\" name=\"loginId\" placeholder=\"loginId\"/>\r\n"
-        		+ "    <input type=\"text\" name=\"userName\" placeholder=\"userName\"/>\r\n"
-        		+ "    <input type=\"password\" name=\"pwd\" placeholder=\"Password\"/>\r\n"
-        		+ "    <input type=\"text\" name=\"email\" placeholder=\"email\"/>\r\n"
-        		+ "		<input type=\"submit\" value=\"Join\"/>\r\n"
-        		+ "</form>";
-    }
-
-	@PostMapping("/api/joinProc")
-	@ResponseBody
-    public ComResult<Integer> joinProc(
-			HttpServletRequest req
-			, HttpServletResponse res
-			, @RequestBody PInsertUser pInsertUser
-	) {
-        return userService.insertUser(pInsertUser);
     }
 }

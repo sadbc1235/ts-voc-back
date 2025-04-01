@@ -13,6 +13,8 @@ import org.springframework.web.filter.CorsFilter;
 
 import com.ts_voc_back.Security.dto.AuthFailureHandler;
 
+import jakarta.servlet.http.HttpSession;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -25,13 +27,13 @@ public class SecurityConfig {
 	@Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		AuthFailureHandler authFailureHandler = new AuthFailureHandler();
-		
+
 		http.csrf((auth) -> auth.disable());
 
         http.authorizeHttpRequests((auth) -> auth
-    		.requestMatchers("/api/loginProc", "/api/joinProc").permitAll()
-    		.requestMatchers("/api/admin/**").hasAnyRole("ADMIN")
-    		.requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+    		.requestMatchers("/api/loginProc", "/api/joinProc", "/api/loginCheck", "/api/loginFail", "/api/logout").permitAll()
+    		.requestMatchers("/api/ts/**").hasAnyRole("ADMIN")
+    		.requestMatchers("/api/**").hasAnyRole("USER", "ADMIN")
     		.anyRequest().authenticated()
         );
 
@@ -39,33 +41,35 @@ public class SecurityConfig {
         	.usernameParameter("loginId")
         	.passwordParameter("pwd")
         	.loginProcessingUrl("/api/loginProc")
-        	.defaultSuccessUrl("/api/loginOk")
+        	.defaultSuccessUrl("/api/loginCheck")
         	.failureHandler(authFailureHandler)
         );
 
+        http.logout( logout -> logout
+        		.logoutUrl("/api/logout")
+        		.addLogoutHandler((request, response, authentication) -> {
+                    HttpSession session = request.getSession();
+                    if (session != null) {
+                        session.invalidate();
+                    }
+                })
+        		.logoutSuccessHandler((request, response, authentication) ->
+                	response.sendRedirect("/api/loginCheck")
+                )
+        		.deleteCookies("JSESSIONID")
+        );
+
         http.sessionManagement( auth -> auth
-        	.maximumSessions(2)
-        	.maxSessionsPreventsLogin(true)
+        	.maximumSessions(1)
+        	.maxSessionsPreventsLogin(false)
+        	.expiredUrl("/api/loginCheck")
         );
 
         http.sessionManagement( auth -> auth
         	.sessionFixation().changeSessionId()
+        	.invalidSessionUrl("/api/loginCheck")
         );
 
         return http.build();
-    }
-	
-	@Bean
-    public CorsFilter corsFilter() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:3000");// 리액트 서버
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-
-        return new CorsFilter(source);
     }
 }

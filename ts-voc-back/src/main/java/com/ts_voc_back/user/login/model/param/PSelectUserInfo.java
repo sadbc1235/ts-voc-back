@@ -1,4 +1,4 @@
-package com.ts_voc_back.user.model.param;
+package com.ts_voc_back.user.login.model.param;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,20 +1,12 @@
-package com.ts_voc_back.user.mapper;
+package com.ts_voc_back.user.join.mapper;
 
 
 import org.apache.ibatis.annotations.Mapper;
-import com.ts_voc_back.user.model.param.*;
-import com.ts_voc_back.user.model.result.*;
+
+import com.ts_voc_back.user.join.model.param.PInsertUser;
 
 @Mapper
-public interface UserMapper {
-
-	/**
-	 * 사용자 정보 조회
-	 * @param param
-	 * @return
-	 * @throws Exception
-	 */
-	RSelectUserInfo selectUserInfo(PSelectUserInfo param) throws Exception;
+public interface JoinMapper {
 
 	/**
 	 * 로그인 아이디 중복 체크
