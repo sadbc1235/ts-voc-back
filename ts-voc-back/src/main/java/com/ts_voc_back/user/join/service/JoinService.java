@@ -31,13 +31,34 @@ public class JoinService {
 		try {
 			ValidationParam validationParam = new ValidationParam();
 			// 공통 체크 (특수 문자 및 sql 인젝션 체크)
+			// 특수문자
+			if(
+					validationParam.checkSqlExp(pInsertUser.getLoginId()) ||
+					validationParam.checkSqlExp(pInsertUser.getUserName()) ||
+					validationParam.checkSqlExp(pInsertUser.getPwd()) ||
+					validationParam.checkSqlExp(pInsertUser.getEmail())
+			) {
+				result.setFail("해당 특수문자는 입력이 불가능합니다.\\n( ex : &, <, >, `, \", \\', ;, /, (, ), * )");
+				return result;
+			}
+
+			// sql 인젝션
+			if(
+					validationParam.checkSqlInjection(pInsertUser.getLoginId()) ||
+					validationParam.checkSqlInjection(pInsertUser.getUserName()) ||
+					validationParam.checkSqlInjection(pInsertUser.getPwd()) ||
+					validationParam.checkSqlInjection(pInsertUser.getEmail())
+			) {
+				result.setFail("예약어는 입력이 불가능합니다.");
+				return result;
+			}
 
 			// id 체크
 			if(pInsertUser.getLoginId().trim().length() < 4 || pInsertUser.getLoginId().trim().length() > 12) {
 				result.setFail("아이디는 4글자 이상, 12글자 이하로 입력해주세요.");
 				return result;
 			}
-			if(validationParam.checkKor(pInsertUser.getLoginId())) {
+			if(!validationParam.checkKor(pInsertUser.getLoginId())) {
 				result.setFail("아이디는 영어, 숫자로만 입력해주세요.");
 				return result;
 			}
@@ -47,7 +68,7 @@ public class JoinService {
 				return result;
 			}
 			// email 체크
-			if(validationParam.checkEmail(pInsertUser.getEmail())) {
+			if(!validationParam.checkEmail(pInsertUser.getEmail())) {
 				result.setFail("Email 주소를 확인해 주세요.");
 				return result;
 			}

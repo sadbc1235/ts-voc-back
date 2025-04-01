@@ -22,15 +22,15 @@ public class ValidationParam {
 	}
 
 	public boolean checkSqlInjection(String str) {
-		String sqlIjtReg = "[OR|SELECT|INSERT|DELETE|UPDATE|CREATE|DROP|EXEC|UNION|FETCH|DECLARE|TRUNCATE]";
+		String sqlIjtReg = "(OR|SELECT|INSERT|DELETE|UPDATE|CREATE|DROP|EXEC|UNION|FETCH|DECLARE|TRUNCATE|or|select|insert|delete|update|create|drop|exec|union|fetch|declare|truncate)\s";
 		Pattern sqlIjtPatten = Pattern.compile(sqlIjtReg);
-		Matcher sqlIjtMatcher = sqlIjtPatten.matcher(str.trim());
+		Matcher sqlIjtMatcher = sqlIjtPatten.matcher(str);
 
 		return sqlIjtMatcher.find();
 	}
 
 	public boolean checkEmail(String str) {
-		String reg = "\\\\w+@\\\\w+\\\\.\\\\w+(\\\\.\\\\w+)?";
+		String reg = "\\w+@\\w+\\.\\w+(\\.\\w+)?";
 		Pattern patten = Pattern.compile(reg);
 		Matcher matcher = patten .matcher(str.trim());
 
