@@ -14,6 +14,7 @@ public class RSelectUserInfo {
 	private String pwd;
 	private String email;
 	private String role;
+	private String allowYn;
 
 	public String getUserSeq() {
 		return userSeq;
@@ -50,5 +51,11 @@ public class RSelectUserInfo {
 	}
 	public void setRole(String role) {
 		this.role = role;
+	}
+	public String getAllowYn() {
+		return allowYn;
+	}
+	public void setAllowYn(String allowYn) {
+		this.allowYn = allowYn;
 	}
 }

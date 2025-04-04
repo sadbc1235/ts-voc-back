@@ -56,4 +56,14 @@ public class JoinController {
 	) {
         return joinService.insertUser(pInsertUser);
     }
+
+	@PostMapping("/api/selectExistUser")
+	@ResponseBody
+    public ComResult<Integer> selectExistUser(
+			HttpServletRequest req
+			, HttpServletResponse res
+			, @RequestBody PInsertUser pInsertUser
+	) {
+        return joinService.selectExistUser(pInsertUser);
+    }
 }

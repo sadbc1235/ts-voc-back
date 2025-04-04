@@ -19,7 +19,8 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AuthFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 	@Override
     public void onAuthenticationFailure(
-    		HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    		HttpServletRequest request, HttpServletResponse response, AuthenticationException exception
+    	) throws IOException, ServletException {
 
         String errorMessage = null;
 

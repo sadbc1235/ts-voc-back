@@ -13,6 +13,7 @@
 			, pwd
 			, email
 			, role
+			, allow_yn	AS allowYn
 		FROM	t_user
 		WHERE	login_id	= #{loginId}
 	</select>

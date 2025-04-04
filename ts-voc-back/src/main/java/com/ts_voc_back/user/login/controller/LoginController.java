@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ts_voc_back.common.model.ComResult;
 import com.ts_voc_back.user.login.service.LoginService;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -51,31 +53,8 @@ public class LoginController {
     }
 
 	@GetMapping("/api/loginCheck")
-    public ComResult<Map<String, String>> loginOk() {
-		ComResult<Map<String, String>> result = new ComResult<Map<String, String>>();
-
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		System.out.println("principal : "+principal);
-		if(principal.equals("anonymousUser")) {
-			result.setFail("세션이 만료 되었습니다.");
-			return result;
-		} else {
-			String loginId = authentication.getName();
-	        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-	        List<String> roleList = new ArrayList<>();
-	        for(GrantedAuthority auth : authorities) {
-	        	roleList.add(auth.getAuthority());
-	        }
-	        Map<String, String> userInfo = new HashMap<>();
-	        for(String role : roleList) {
-	        	userInfo.put("role", role);
-	        }
-	        userInfo.put("loginId", loginId);
-
-	        result.setSuccess(userInfo);
-	        return result;
-		}
+    public ComResult<Map<String, String>> loginCheck(HttpServletResponse response) {
+		return loginService.loginCheck(response);
     }
 
 	@GetMapping("/api/loginFail")

@@ -15,13 +15,15 @@
 			parameterType="com.ts_voc_back.user.join.model.param.PInsertUser"
 	>
 		INSERT INTO t_user (
-			login_id
+			comp_seq
+			, login_id
 			, user_name
 			, pwd
 			, email
 			, role
 		) VALUES (
-			#{loginId}
+			 #{compSeq}
+			, #{loginId}
 			, #{userName}
 			, #{pwd}
 			, #{email}

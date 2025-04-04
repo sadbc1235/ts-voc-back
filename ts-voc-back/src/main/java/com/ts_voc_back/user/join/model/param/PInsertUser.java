@@ -8,12 +8,19 @@ import lombok.ToString;
 @Setter
 @ToString
 public class PInsertUser {
+	private String compSeq;
 	private String loginId;
 	private String userName;
 	private String pwd;
 	private String email;
 	private String role;
 
+	public String getCompSeq() {
+		return compSeq;
+	}
+	public void setCompSeq(String compSeq) {
+		this.compSeq = compSeq;
+	}
 	public String getLoginId() {
 		return loginId;
 	}

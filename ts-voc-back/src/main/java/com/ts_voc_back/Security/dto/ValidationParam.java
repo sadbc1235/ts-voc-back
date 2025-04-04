@@ -22,7 +22,7 @@ public class ValidationParam {
 	}
 
 	public boolean checkSqlInjection(String str) {
-		String sqlIjtReg = "(OR|SELECT|INSERT|DELETE|UPDATE|CREATE|DROP|EXEC|UNION|FETCH|DECLARE|TRUNCATE|or|select|insert|delete|update|create|drop|exec|union|fetch|declare|truncate)\s";
+		String sqlIjtReg = "(OR|SELECT|INSERT|DELETE|UPDATE|CREATE|DROP|EXEC|UNION|FETCH|DECLARE|TRUNCATE|or|select|insert|delete|update|create|drop|exec|union|fetch|declare|truncate)";
 		Pattern sqlIjtPatten = Pattern.compile(sqlIjtReg);
 		Matcher sqlIjtMatcher = sqlIjtPatten.matcher(str);
 

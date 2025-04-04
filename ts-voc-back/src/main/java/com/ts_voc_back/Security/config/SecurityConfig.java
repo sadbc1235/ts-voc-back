@@ -7,9 +7,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import com.ts_voc_back.Security.dto.AuthFailureHandler;
 
@@ -31,7 +28,7 @@ public class SecurityConfig {
 		http.csrf((auth) -> auth.disable());
 
         http.authorizeHttpRequests((auth) -> auth
-    		.requestMatchers("/api/loginProc", "/api/joinProc", "/api/loginCheck", "/api/loginFail", "/api/logout").permitAll()
+    		.requestMatchers("/api/loginProc", "/api/loginCheck", "/api/loginFail", "/api/selectExistUser", "/api/joinProc", "/api/logout").permitAll()
     		.requestMatchers("/api/ts/**").hasAnyRole("ADMIN")
     		.requestMatchers("/api/**").hasAnyRole("USER", "ADMIN")
     		.anyRequest().authenticated()
