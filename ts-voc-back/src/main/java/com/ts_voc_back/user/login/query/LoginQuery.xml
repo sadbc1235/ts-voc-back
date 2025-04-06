@@ -8,6 +8,7 @@
 	>
 		SELECT
 			user_seq	AS userSeq
+			, comp_seq	AS compSeq
 			, login_id	AS loginId
 			, user_name	AS userName
 			, pwd

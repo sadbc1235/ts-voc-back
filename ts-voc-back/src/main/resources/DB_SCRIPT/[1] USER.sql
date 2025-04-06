@@ -1,6 +1,24 @@
+CREATE TABLE IF NOT EXISTS `t_comp` (
+    `comp_seq`				BIGINT(10)		UNSIGNED    NOT NULL AUTO_INCREMENT                                         COMMENT '회사 시퀀스'
+    , `create_dt`	        TIMESTAMP					NOT NULL DEFAULT CURRENT_TIMESTAMP								COMMENT '생성일시'
+    , `modify_dt`	        TIMESTAMP					NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP	COMMENT '수정일시'
+    , PRIMARY KEY	(`comp_seq`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COMMENT='회사 정보';
+ALTER TABLE `t_comp`   ADD COLUMN IF NOT EXISTS `comp_name`			VARCHAR(256)	NOT NULL    COMMENT '회사명'    AFTER `comp_seq`;
+
+CREATE TABLE IF NOT EXISTS `t_module` (
+    `module_seq`			BIGINT(10)		UNSIGNED    NOT NULL AUTO_INCREMENT                                         COMMENT '모듈 시퀀스'
+    , `comp_seq`			BIGINT(10)		UNSIGNED	NOT	NULL 				                                        COMMENT '회사 시퀀스'
+    , `create_dt`	        TIMESTAMP					NOT NULL DEFAULT CURRENT_TIMESTAMP								COMMENT '생성일시'
+    , `modify_dt`	        TIMESTAMP					NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP	COMMENT '수정일시'
+    , PRIMARY KEY	(`module_seq`)
+    , KEY			(`comp_seq`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COMMENT='회사 정보';
+ALTER TABLE `t_module`   ADD COLUMN IF NOT EXISTS `module_name`	VARCHAR(128)	NOT NULL    COMMENT '모듈명'    AFTER `module_seq`;
+
 CREATE TABLE IF NOT EXISTS `t_user` (
     `user_seq`				BIGINT(10)		UNSIGNED    NOT NULL AUTO_INCREMENT                                         COMMENT '사용자 시퀀스'
-    , `comp_seq`			VARCHAR(32)			    	NOT	NULL 				                                        COMMENT '회사 시퀀스'
+    , `comp_seq`			BIGINT(10)		UNSIGNED	NOT	NULL 				                                        COMMENT '회사 시퀀스'
     , `login_id`			VARCHAR(128)			    NOT	NULL 				                                        COMMENT '로그인 아이디'
     , `create_dt`	        TIMESTAMP					NOT NULL DEFAULT CURRENT_TIMESTAMP								COMMENT '생성일시'
     , `modify_dt`	        TIMESTAMP					NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP	COMMENT '수정일시'

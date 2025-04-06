@@ -67,4 +67,25 @@ public class LoginService {
 
 		return result;
 	}
+
+	/**
+	 * 로그인 정보 조회
+	 * @return
+	 */
+	public RSelectUserInfo getLoginInfo() {
+		RSelectUserInfo _userInfo = new RSelectUserInfo();
+		try {
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			String loginId = authentication.getName();
+
+			PSelectUserInfo pSelectUserInfo = new PSelectUserInfo();
+			pSelectUserInfo.setLoginId(loginId);
+			_userInfo = loginMapper.selectUserInfo(pSelectUserInfo);
+
+			return _userInfo;
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		return _userInfo;
+	}
 }

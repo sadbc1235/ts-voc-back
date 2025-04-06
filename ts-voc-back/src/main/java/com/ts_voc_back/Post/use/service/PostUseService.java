@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -15,10 +16,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ts_voc_back.Post.use.mapper.PostUseMapper;
+import com.ts_voc_back.Post.use.model.param.PInsertPost;
 import com.ts_voc_back.common.model.ComResult;
+import com.ts_voc_back.user.login.model.result.RSelectUserInfo;
+import com.ts_voc_back.user.login.service.LoginService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,48 +33,23 @@ public class PostUseService {
 
 	@Autowired
 	final PostUseMapper postUseMapper = null;
+	@Autowired
+	final LoginService loginService = null;
 
-	private String devDefaultPath = "C:\\Users\\eun_su_kim\\Documents\\web\\ts_voc_folder\\content_img";
+//	private String devDefaultPath = "C:\\Users\\eun_su_kim\\Documents\\web\\ts_voc_folder";
+	private String devDefaultPath = "C:\\Users\\eun-su-kim\\Documents\\web\\ts_voc_folder";
 	private String defaultPath = "";
 
-	public ComResult<Map<String, Object>> uploadContentImg(List<MultipartFile> fileList) {
-		ComResult<Map<String, Object>> result = new ComResult<Map<String, Object>>();
-		Map<String, Object> innerResult = new HashMap<>();
-		try {
-
-	        for(MultipartFile file : fileList) {
-	        	// 저장할 폴더명을 uuid로 생성
-	        	String uuid = UUID.randomUUID().toString();
-	        	// 저장할 폴더 경로
-				String savePath = devDefaultPath+"\\"+uuid;
-				File uploadPath = new File(savePath);
-				// 해당경로에 폴더가 없으면 생성
-		        if(uploadPath.exists() == false) {
-		            uploadPath.mkdir();
-		        }
-
-	        	// 저장을 위해 File 타입의 이미지 정보를 담고있는 변수 선언
-                File saveFile = new File(uploadPath, file.getOriginalFilename());
-                // 저장
-                file.transferTo(saveFile);
-
-                String imgUuid = file.getOriginalFilename().split("\\.")[0];
-                innerResult.put(imgUuid, "/api/content/img/"+uuid+"/"+file.getOriginalFilename());
-	        }
-
-	        result.setSuccess(innerResult);
-
-		} catch(Exception ex) {
-			result.setError(ex);
-		}
-
-		return result;
-	}
-
-	public ResponseEntity<byte[]> displayImg(String filepath, String filename) {
+	/**
+	 * 본문 이미지 조회
+	 * @param filepath
+	 * @param filename
+	 * @return
+	 */
+	public ResponseEntity<byte[]> displayImg(String postSeq, String filepath, String filename) {
 
 		//파일이 저장된 경로
-		String savename = devDefaultPath+"\\"+filepath+"\\"+filename;
+		String savename = devDefaultPath+"\\content_img\\"+postSeq+"\\"+filepath+"\\"+filename;
 		File file = new File(savename);
 
 		//저장된 이미지파일의 이진데이터 형식을 구함
@@ -90,5 +70,82 @@ public class PostUseService {
 		}
 
 		return entity;
+	}
+
+	/**
+	 * 게시물 해더 정보 저장
+	 * @param param
+	 * @return
+	 */
+	public ComResult<String> insertPost(PInsertPost param) {
+		ComResult<String> result = new ComResult<String>(param);
+		RSelectUserInfo _userInfo = loginService.getLoginInfo();
+
+		try {
+			// [1] 게시물 정보 저장 (본문 빼고!)
+			param.setCompSeq(_userInfo.getCompSeq());
+			param.setUserSeq(_userInfo.getUserSeq());
+			postUseMapper.insertPost(param);
+			result.setSuccess(param.getPostSeq());
+		} catch(Exception ex) {
+			result.setError(ex);
+		}
+		return result;
+	}
+
+	/**
+	 * 본문 이미지 저장
+	 */
+	public ComResult<Map<String, String>> uploadContentImg(List<MultipartFile> contentImgList, String postSeq) {
+		ComResult<Map<String, String>> result = new ComResult<Map<String, String>>();
+		Map<String, String> urlMap = new HashMap<>();
+		try {
+
+	        for(MultipartFile file : contentImgList) {
+	        	// 저장할 폴더명을 uuid로 생성
+	        	String uuid = UUID.randomUUID().toString();
+	        	// 저장할 폴더 경로
+				String savePath = devDefaultPath+"\\content_img\\"+postSeq;
+				File uploadPath = new File(savePath);
+				// 해당경로에 폴더가 없으면 생성
+		        if(uploadPath.exists() == false) {
+		            uploadPath.mkdir();
+		        }
+		        uploadPath = new File((savePath+"\\"+uuid));
+		        if(uploadPath.exists() == false) {
+		            uploadPath.mkdir();
+		        }
+
+	        	// 저장을 위해 File 타입의 이미지 정보를 담고있는 변수 선언
+                File saveFile = new File(uploadPath, file.getOriginalFilename());
+                // 저장
+                file.transferTo(saveFile);
+
+                String imgUuid = file.getOriginalFilename().split("\\.")[0];
+                urlMap.put(imgUuid, "/api/content/img/"+postSeq+"/"+uuid+"/"+file.getOriginalFilename());
+	        }
+	        result.setSuccess(urlMap);
+
+		} catch(Exception ex) {
+			result.setError(ex);
+		}
+
+		return result;
+	}
+
+	/**
+	 * 본문 업데이트
+	 * @param param
+	 * @return
+	 */
+	public ComResult<Integer> updatePostContent(PInsertPost param) {
+		ComResult<Integer> result = new ComResult<Integer>(param);
+
+		try {
+			result.setSuccess(postUseMapper.updatePostContent(param));
+		} catch(Exception ex) {
+			result.setError(ex);
+		}
+		return result;
 	}
 }

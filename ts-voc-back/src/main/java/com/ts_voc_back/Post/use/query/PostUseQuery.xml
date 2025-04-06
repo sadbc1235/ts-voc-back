@@ -1,4 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ts_voc_back.Post.use.mapper.PostUseMapper">
+
+	<insert id="insertPost"
+			parameterType="com.ts_voc_back.Post.use.model.param.PInsertPost"
+			useGeneratedKeys="true"
+			keyProperty="postSeq"
+			keyColumn="post_seq"
+	>
+		/* insertPost */
+		INSERT INTO t_post (
+			comp_seq
+			, user_seq
+			, module_seq
+			, module_name
+			, sn_no
+			, title
+			, content
+			, del_yn
+			, create_seq
+			, modify_seq
+		)	VALUES (
+			#{compSeq}
+			, #{userSeq}
+			, #{moduleSeq}
+			, #{moduleName}
+			, #{snNo}
+			, #{title}
+			, ''
+			, 'N'
+			, #{userSeq}
+			, #{userSeq}
+		)
+	</insert>
+
+	<update id="updatePostContent"
+			parameterType="com.ts_voc_back.Post.use.model.param.PInsertPost"
+	>
+		/* updatePostContent */
+		UPDATE t_post
+		SET
+			content	= #{content}
+		WHERE	post_seq	= #{postSeq}
+	</update>
 </mapper>
