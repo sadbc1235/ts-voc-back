@@ -38,7 +38,7 @@ public class LoginService {
 				cookie.setPath("/");
 				cookie.setMaxAge(0);
 				response.addCookie(cookie);
-				result.setFail("세션이 만료 되었습니다.");
+				result.setFail("세션이 만료 되었습니다.2");
 				return result;
 			} else {
 				String loginId = authentication.getName();

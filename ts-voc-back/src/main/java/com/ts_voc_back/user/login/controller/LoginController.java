@@ -58,8 +58,14 @@ public class LoginController {
     }
 
 	@GetMapping("/api/loginFail")
-    public ComResult<Map<String, String>> loginFail(@RequestParam("error") String errorMsg) {
+    public ComResult<Map<String, String>> loginFail(@RequestParam("error") String errorMsg, HttpServletResponse response) {
 		ComResult<Map<String, String>> result = new ComResult<Map<String, String>>();
+
+		Cookie cookie = new Cookie("JSESSIONID", null);
+		cookie.setPath("/");
+		cookie.setMaxAge(0);
+		response.addCookie(cookie);
+
 		result.setFail(errorMsg);
         return result;
     }
