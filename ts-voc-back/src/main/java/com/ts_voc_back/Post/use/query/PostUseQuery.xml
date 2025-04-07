@@ -43,4 +43,129 @@
 			content	= #{content}
 		WHERE	post_seq	= #{postSeq}
 	</update>
+
+	<insert id="insertPostAttach"
+			parameterType="com.ts_voc_back.Post.use.model.param.PInsertPostAttach"
+	>
+		/* insertPostAttach */
+		INSERT INTO t_post_attach (
+			post_seq
+			, comp_seq
+			, user_seq
+			, display_name
+			, real_name
+			, ext
+			, file_size
+			, save_path
+			, type
+			, create_seq
+			, modify_seq
+		)	VALUES (
+			#{postSeq}
+			, #{compSeq}
+			, #{userSeq}
+			, #{displayName}
+			, #{realName}
+			, #{ext}
+			, #{fileSize}
+			, #{savePath}
+			, #{type}
+			, #{userSeq}
+			, #{userSeq}
+		)
+	</insert>
+
+	<select id="selectAttachInfo"
+			parameterType="com.ts_voc_back.Post.use.model.param.PSelectAttachInfo"
+			resultType="com.ts_voc_back.Post.use.model.result.RSelectAttachInfo"
+	>
+		/* selectAttachInfo */
+		SELECT
+			CONCAT(save_path, '\\', real_name)	AS savePath
+			, display_name						AS displayName
+		FROM	t_post_attach
+		WHERE	post_attach_seq	= #{postAttachSeq}
+	</select>
+
+	<select id="selectPostInfo"
+			parameterType="com.ts_voc_back.Post.use.model.param.PSelectPostInfo"
+			resultType="com.ts_voc_back.Post.use.model.result.RSelectPostInfo"
+	>
+		/* selectPostInfo */
+		SELECT
+			tp.post_seq         AS postSeq
+			, tp.user_seq       AS userSeq
+	        , tu.user_name      AS userName
+	        , tp.module_seq     AS moduleSeq
+	        , tp.module_name    AS moduleName
+	        , tp.sn_no          AS snNo
+	        , tp.title          AS title
+	        , tp.state          AS state
+	        , tp.content        AS content
+			, DATE_FORMAT(tp.create_dt, '%Y-%m-%d') AS createDt
+		FROM	t_post tp
+
+		INNER JOIN t_user tu
+		ON	tp.user_seq	= tu.user_seq
+
+		WHERE	tp.comp_seq	= #{compSeq}
+		 AND	tp.post_seq	= #{postSeq}
+	</select>
+
+	<select id="selectPostAttachList"
+			parameterType="com.ts_voc_back.Post.use.model.param.PSelectPostInfo"
+			resultType="com.ts_voc_back.Post.use.model.result.RSelectPostAttachList"
+	>
+		/* selectPostAttachList */
+		SELECT
+			CONCAT('/api/content/attach/', post_attach_seq)	AS url
+			, display_name				AS `name`
+			, ext
+			, `type`				AS type2
+		FROM	t_post_attach
+		WHERE	comp_seq	= #{compSeq}
+		 AND	post_seq	= #{postSeq}
+	</select>
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

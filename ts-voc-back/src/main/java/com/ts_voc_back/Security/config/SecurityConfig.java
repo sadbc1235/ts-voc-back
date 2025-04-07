@@ -28,7 +28,7 @@ public class SecurityConfig {
 		http.csrf((auth) -> auth.disable());
 
         http.authorizeHttpRequests((auth) -> auth
-    		.requestMatchers("/api/loginProc", "/api/loginCheck", "/api/loginFail", "/api/selectExistUser", "/api/joinProc", "/api/logout", "/api/uploadContentImg").permitAll()
+    		.requestMatchers("/api/loginProc", "/api/loginCheck", "/api/loginFail", "/api/selectExistUser", "/api/joinProc", "/api/logout").permitAll()
     		.requestMatchers("/api/ts/**").hasAnyRole("ADMIN")
     		.requestMatchers("/api/**").hasAnyRole("USER", "ADMIN")
     		.anyRequest().authenticated()

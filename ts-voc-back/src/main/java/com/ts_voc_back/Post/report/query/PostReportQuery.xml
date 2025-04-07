@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ts_voc_back.Post.report.mapper.PostReportMapper">
+	<select id="selectPostList"
+			parameterType="com.ts_voc_back.Post.report.model.param.PSelectPostList"
+			resultType="com.ts_voc_back.Post.report.model.result.RSelectPostList"
+	>
+		/* selectPostList */
+		SELECT
+			tp.post_seq         AS postSeq
+	        , tp.comp_seq       AS compSeq
+	        , tp.user_seq       AS userSeq
+	        , tu.user_name      AS userName
+	        , tp.module_seq     AS moduleSeq
+	        , tp.module_name    AS moduleName
+	        , tp.sn_no          AS snNo
+	        , tp.title          AS title
+	        , tp.state          AS state
+			, DATE_FORMAT(tp.create_dt, '%Y%m%d') AS createDt
+		FROM	t_post tp
+
+		INNER JOIN t_user tu
+		ON	tp.user_seq	= tu.user_seq
+
+		WHERE	tp.del_yn	= 'N'
+		 AND	tp.comp_seq	= #{compSeq}
+		 <if test='moduleSeq != null and !moduleSeq.equals("0")'>
+		 AND	tp.module_seq	= #{moduleSeq}
+		 </if>
+		 AND	(
+			tu.user_name	LIKE CONCAT('%', #{searchStr}, '%')
+			OR
+			tp.title 	LIKE CONCAT('%', #{searchStr}, '%')
+			OR
+			tp.content 	LIKE CONCAT('%', #{searchStr}, '%')
+			OR
+			DATE_FORMAT(tp.create_dt, '%Y%m%d') 	LIKE CONCAT('%', #{searchStr}, '%')
+			OR
+			DATE_FORMAT(tp.create_dt, '%Y-%m-%d')	LIKE CONCAT('%', #{searchStr} , '%')
+		 )
+	</select>
+</mapper>

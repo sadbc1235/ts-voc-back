@@ -20,7 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ts_voc_back.Post.use.mapper.PostUseMapper;
-import com.ts_voc_back.Post.use.model.param.PInsertPost;
+import com.ts_voc_back.Post.use.model.param.*;
+import com.ts_voc_back.Post.use.model.result.*;
 import com.ts_voc_back.common.model.ComResult;
 import com.ts_voc_back.user.login.model.result.RSelectUserInfo;
 import com.ts_voc_back.user.login.service.LoginService;
@@ -36,8 +37,8 @@ public class PostUseService {
 	@Autowired
 	final LoginService loginService = null;
 
-//	private String devDefaultPath = "C:\\Users\\eun_su_kim\\Documents\\web\\ts_voc_folder";
-	private String devDefaultPath = "C:\\Users\\eun-su-kim\\Documents\\web\\ts_voc_folder";
+	private String devDefaultPath = "C:\\Users\\eun_su_kim\\Documents\\web\\ts_voc_folder";
+//	private String devDefaultPath = "C:\\Users\\eun-su-kim\\Documents\\web\\ts_voc_folder";
 	private String defaultPath = "";
 
 	/**
@@ -66,6 +67,42 @@ public class PostUseService {
 			//3. 응답본문
 			entity = new ResponseEntity<>(result,header,HttpStatus.OK);//데이터, 헤더, 상태값
 		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return entity;
+	}
+
+	/**
+	 * 첨부파일 다운로드
+	 * @param postAttachSeq
+	 * @return
+	 */
+	public ResponseEntity<byte[]> downloadAttach(String postAttachSeq) {
+		//저장된 이미지파일의 이진데이터 형식을 구함
+		byte[] result=null;//1. data
+		ResponseEntity<byte[]> entity=null;
+
+		try {
+
+			// 첨부파일 정보 조회
+			PSelectAttachInfo pSelectAttachInfo = new PSelectAttachInfo();
+			pSelectAttachInfo.setPostAttachSeq(postAttachSeq);
+			RSelectAttachInfo attachInfo = postUseMapper.selectAttachInfo(pSelectAttachInfo);
+
+			//파일이 저장된 경로
+			String savename = attachInfo.getSavePath();
+			File file = new File(savename);
+
+	    	result = FileCopyUtils.copyToByteArray(file);
+
+			//2. header
+			HttpHeaders header = new HttpHeaders();
+			header.add("Content-type",Files.probeContentType(file.toPath())); //파일의 컨텐츠타입을 직접 구해서 header에 저장
+
+			//3. 응답본문
+			entity = new ResponseEntity<>(result,header,HttpStatus.OK);//데이터, 헤더, 상태값
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -146,6 +183,94 @@ public class PostUseService {
 		} catch(Exception ex) {
 			result.setError(ex);
 		}
+		return result;
+	}
+
+	/**
+	 * 첨부파일 저장
+	 * @param attachList
+	 * @param postSeq
+	 * @return
+	 */
+	public ComResult<Boolean> uploadAttach(List<MultipartFile> attachList, String postSeq) {
+		ComResult<Boolean> result = new ComResult<Boolean>();
+		RSelectUserInfo _userInfo = loginService.getLoginInfo();
+
+		try {
+	        for(MultipartFile file : attachList) {
+	        	String uuid = UUID.randomUUID().toString();
+	        	String ext = file.getOriginalFilename().split("\\.")[1];
+	        	String displayName = file.getOriginalFilename();
+	        	String realName = uuid+"."+ext;
+	        	long fileSize = file.getSize();
+	        	String type = file.getContentType().split("/")[0];
+
+	        	// [1] 파일 저장
+	        	// 저장할 폴더 경로
+				String savePath = devDefaultPath+"\\content_attach\\"+postSeq;
+				File uploadPath = new File(savePath);
+				// 해당경로에 폴더가 없으면 생성
+		        if(uploadPath.exists() == false) {
+		            uploadPath.mkdir();
+		        }
+		        // 저장할 폴더명을 uuid로 생성
+		        savePath +=  "\\"+uuid;
+		        uploadPath = new File(savePath);
+		        if(uploadPath.exists() == false) {
+		            uploadPath.mkdir();
+		        }
+
+	        	// 저장을 위해 File 타입의 이미지 정보를 담고있는 변수 선언
+                File saveFile = new File(uploadPath, realName);
+                // 저장
+                file.transferTo(saveFile);
+
+                // [2] 파일 정보 저장
+                PInsertPostAttach pInsertPostAttach = new PInsertPostAttach();
+                pInsertPostAttach.setPostSeq(postSeq);
+                pInsertPostAttach.setCompSeq(_userInfo.getCompSeq());
+                pInsertPostAttach.setUserSeq(_userInfo.getUserSeq());
+                pInsertPostAttach.setDisplayName(displayName);
+                pInsertPostAttach.setRealName(realName);
+                pInsertPostAttach.setExt(ext);
+                pInsertPostAttach.setFileSize(fileSize);
+                pInsertPostAttach.setSavePath(savePath);
+                pInsertPostAttach.setType(type);
+                postUseMapper.insertPostAttach(pInsertPostAttach);
+	        }
+
+	        result.setSuccess(true);
+
+		} catch(Exception ex) {
+			result.setError(ex);
+		}
+
+		return result;
+	}
+
+	/**
+	 * 게시물 정보 조회
+	 * @param param
+	 * @return
+	 */
+	public ComResult<RSelectPostInfo> selectPostInfo(PSelectPostInfo param) {
+		ComResult<RSelectPostInfo> result = new ComResult<>(param);
+		RSelectPostInfo innerResult = new RSelectPostInfo();
+		RSelectUserInfo _userInfo = loginService.getLoginInfo();
+		try {
+			param.setCompSeq(_userInfo.getCompSeq());
+			innerResult = postUseMapper.selectPostInfo(param);
+			if(innerResult.getUserSeq().equals(_userInfo.getUserSeq())) {
+				innerResult.setIsMyPost(true);
+			} else {
+				innerResult.setIsMyPost(false);
+			}
+			innerResult.setAttachList(postUseMapper.selectPostAttachList(param));
+			result.setSuccess(innerResult);
+		} catch(Exception ex) {
+			result.setError(ex);
+		}
+
 		return result;
 	}
 }

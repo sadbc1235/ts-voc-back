@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ts_voc_back.Post.use.model.param.PInsertPost;
+import com.ts_voc_back.Post.use.model.param.*;
+import com.ts_voc_back.Post.use.model.result.*;
 import com.ts_voc_back.Post.use.service.PostUseService;
 import com.ts_voc_back.common.model.ComResult;
 
@@ -65,6 +65,21 @@ public class PostUseController {
     }
 
 	/**
+	 * 첨부파일 저장
+	 * @param contentImgList
+	 * @param postSeq
+	 * @return
+	 */
+	@PostMapping(value = "/api/post/use/uploadAttach", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    public ComResult<Boolean> uploadAttach(
+    		@RequestParam(value="attachList", required=false) List<MultipartFile> attachList
+    		, @RequestParam("postSeq") String postSeq
+    ) {
+        return postUserService.uploadAttach( attachList, postSeq );
+    }
+
+	/**
 	 * 본문 이미지 조회
 	 * @param filepath
 	 * @param filename
@@ -79,4 +94,28 @@ public class PostUseController {
 
 		return postUserService.displayImg(postSeq, filepath, filename);
 	}
+
+	/**
+	 * 첨부파일 다운로드
+	 * @param postAttachSeq
+	 * @return
+	 */
+	@GetMapping("/api/content/attach/{postAttachSeq}")
+	public ResponseEntity<byte[]> downloadAttach(
+			@PathVariable("postAttachSeq")String postAttachSeq
+	) {
+
+		return postUserService.downloadAttach(postAttachSeq);
+	}
+
+	/**
+	 * 게시물 정보 조회
+	 * @param param
+	 * @return
+	 */
+	@PostMapping("/api/post/use/selectPostInfo")
+    @ResponseBody
+    public ComResult<RSelectPostInfo> selectPostInfo(@RequestBody PSelectPostInfo param) {
+        return postUserService.selectPostInfo(param);
+    }
 }

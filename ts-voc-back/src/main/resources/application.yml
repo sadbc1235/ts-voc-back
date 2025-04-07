@@ -9,10 +9,19 @@ spring:
       username: ${DB_USER}
       password: ${DB_PW}
       connection-test-query: SELECT 1
+  servlet:
+    multipart:
+      max-file-size: 300MB
+      max-request-size: 300MB
 
-server:
+server: 
   servlet:
     session:
       timeout: 90m
 
   address: 127.0.0.1
+      
+  tomcat:
+    max-http-form-post-size: 
+  
+      

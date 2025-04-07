@@ -16,7 +16,8 @@ ALTER TABLE `t_post`   ADD COLUMN IF NOT EXISTS `module_name`	VARCHAR(128)	NOT N
 ALTER TABLE `t_post`   ADD COLUMN IF NOT EXISTS `sn_no`			VARCHAR(32)		NOT NULL    COMMENT '우선순위'    	AFTER `module_name`;
 ALTER TABLE `t_post`   ADD COLUMN IF NOT EXISTS `title`			VARCHAR(512)	NOT NULL    COMMENT '제목'    	AFTER `sn_no`;
 ALTER TABLE `t_post`   ADD COLUMN IF NOT EXISTS `content`		TEXT			NOT NULL    COMMENT '본문'    	AFTER `title`;
-ALTER TABLE `t_post`   ADD COLUMN IF NOT EXISTS `del_yn`		CHAR(1)			NOT NULL    COMMENT '삭제여부'    	AFTER `content`;
+ALTER TABLE `t_post`   ADD COLUMN IF NOT EXISTS `state`			VARCHAR(32)		NOT NULL	DEFAULT 'new'    COMMENT '상태'    	AFTER `content`;
+ALTER TABLE `t_post`   ADD COLUMN IF NOT EXISTS `del_yn`		CHAR(1)			NOT NULL    COMMENT '삭제여부'    	AFTER `state`;
 
 CREATE TABLE IF NOT EXISTS `t_post_content_history` (
     `post_content_history_seq`	BIGINT(10)		UNSIGNED    NOT NULL AUTO_INCREMENT                                         COMMENT '게시물 수정 기록 시퀀스'
@@ -53,6 +54,7 @@ ALTER TABLE `t_post_attach`   ADD COLUMN IF NOT EXISTS `real_name`		VARCHAR(128)
 ALTER TABLE `t_post_attach`   ADD COLUMN IF NOT EXISTS `ext`			VARCHAR(32)		NOT NULL	COMMENT '확장자'					AFTER `real_name`;
 ALTER TABLE `t_post_attach`   ADD COLUMN IF NOT EXISTS `file_size`		VARCHAR(32)		NOT NULL	COMMENT '파일 사이즈'				AFTER `ext`;
 ALTER TABLE `t_post_attach`   ADD COLUMN IF NOT EXISTS `save_path`		VARCHAR(256)	NOT NULL	COMMENT '파일 저장경로'				AFTER `file_size`;
+ALTER TABLE `t_post_attach`   ADD COLUMN IF NOT EXISTS `type`			VARCHAR(128)	NOT NULL	COMMENT '파일 타입'				AFTER `save_path`;
 
 CREATE TABLE IF NOT EXISTS `t_post_comment` (
     `post_comment_seq`		BIGINT(10)		UNSIGNED    NOT NULL AUTO_INCREMENT                                         COMMENT '게시물 덧글 시퀀스'
