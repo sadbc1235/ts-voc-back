@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `t_post` (
 ALTER TABLE `t_post`   ADD COLUMN IF NOT EXISTS `module_name`	VARCHAR(128)	NOT NULL    COMMENT '모듈명'    	AFTER `module_seq`;
 ALTER TABLE `t_post`   ADD COLUMN IF NOT EXISTS `sn_no`			VARCHAR(32)		NOT NULL    COMMENT '우선순위'    	AFTER `module_name`;
 ALTER TABLE `t_post`   ADD COLUMN IF NOT EXISTS `title`			VARCHAR(512)	NOT NULL    COMMENT '제목'    	AFTER `sn_no`;
-ALTER TABLE `t_post`   ADD COLUMN IF NOT EXISTS `content`		TEXT			NOT NULL    COMMENT '본문'    	AFTER `title`;
+ALTER TABLE `t_post`   ADD COLUMN IF NOT EXISTS `content`		MEDIUMTEXT		NOT NULL    COMMENT '본문'    	AFTER `title`;
 ALTER TABLE `t_post`   ADD COLUMN IF NOT EXISTS `state`			VARCHAR(32)		NOT NULL	DEFAULT 'new'    COMMENT '상태'    	AFTER `content`;
 ALTER TABLE `t_post`   ADD COLUMN IF NOT EXISTS `del_yn`		CHAR(1)			NOT NULL    COMMENT '삭제여부'    	AFTER `state`;
 
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `t_post_content_history` (
     , KEY			(`comp_seq`)
     , KEY			(`user_seq`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COMMENT='게시물 수정 기록';
-ALTER TABLE `t_post_content_history`   ADD COLUMN IF NOT EXISTS `content`	TEXT	NOT NULL	COMMENT '본문'	AFTER `user_seq`;
+ALTER TABLE `t_post_content_history`   ADD COLUMN IF NOT EXISTS `content`	MEDIUMTEXT	NOT NULL	COMMENT '본문'	AFTER `user_seq`;
 
 CREATE TABLE IF NOT EXISTS `t_post_attach` (
     `post_attach_seq`		BIGINT(10)		UNSIGNED    NOT NULL AUTO_INCREMENT                                         COMMENT '게시물 첨부파일 시퀀스'
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `t_post_comment` (
     , KEY			(`comp_seq`)
     , KEY			(`user_seq`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COMMENT='게시물 덧글';
-ALTER TABLE `t_post_comment`   ADD COLUMN IF NOT EXISTS `comment`	TEXT	NOT NULL	COMMENT '덧글'	AFTER `user_seq`;
+ALTER TABLE `t_post_comment`   ADD COLUMN IF NOT EXISTS `comment`	MEDIUMTEXT	NOT NULL	COMMENT '덧글'	AFTER `user_seq`;
 ALTER TABLE `t_post_comment`   ADD COLUMN IF NOT EXISTS `del_yn`	CHAR(1)	NOT NULL    COMMENT '삭제여부'    	AFTER `comment`;
 
 

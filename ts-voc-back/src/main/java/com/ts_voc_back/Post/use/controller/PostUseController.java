@@ -40,6 +40,17 @@ public class PostUseController {
     }
 
 	/**
+	 * 게시물 수정
+	 * @param param
+	 * @return
+	 */
+	@PostMapping("/api/post/use/updatePost")
+    @ResponseBody
+    public ComResult<String> updatePost(@RequestBody PUpdatePost param) {
+        return postUserService.updatePost(param);
+    }
+
+	/**
 	 * 본문 이미지 저장
 	 * @param fileList
 	 * @return
@@ -75,8 +86,9 @@ public class PostUseController {
     public ComResult<Boolean> uploadAttach(
     		@RequestParam(value="attachList", required=false) List<MultipartFile> attachList
     		, @RequestParam("postSeq") String postSeq
+    		, @RequestParam(value="postAttachSeqs", required=false) String postAttachSeqs
     ) {
-        return postUserService.uploadAttach( attachList, postSeq );
+        return postUserService.uploadAttach( attachList, postSeq, postAttachSeqs );
     }
 
 	/**
@@ -117,5 +129,27 @@ public class PostUseController {
     @ResponseBody
     public ComResult<RSelectPostInfo> selectPostInfo(@RequestBody PSelectPostInfo param) {
         return postUserService.selectPostInfo(param);
+    }
+
+	/**
+	 * 게시물 삭제
+	 * @param param
+	 * @return
+	 */
+	@PostMapping("/api/post/use/updatePostDelYn")
+    @ResponseBody
+    public ComResult<Integer> updatePostDelYn(@RequestBody PUpdatePostDelYn param) {
+        return postUserService.updatePostDelYn(param);
+    }
+
+	/**
+	 * 게시물 회신 조회
+	 * @param param
+	 * @return
+	 */
+	@PostMapping("/api/post/use/selectPostComment")
+    @ResponseBody
+    public ComResult<RSelectPostComment> selectPostComment(@RequestBody PSelectPostComment param) {
+        return postUserService.selectPostComment(param);
     }
 }

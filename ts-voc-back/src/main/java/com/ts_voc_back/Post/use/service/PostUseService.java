@@ -3,6 +3,7 @@ package com.ts_voc_back.Post.use.service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,14 +34,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostUseService {
 
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
 	@Autowired
 	final PostUseMapper postUseMapper = null;
 	@Autowired
 	final LoginService loginService = null;
 
-	private String devDefaultPath = "C:\\Users\\eun_su_kim\\Documents\\web\\ts_voc_folder";
-//	private String devDefaultPath = "C:\\Users\\eun-su-kim\\Documents\\web\\ts_voc_folder";
+//	private String devDefaultPath = "C:\\Users\\eun_su_kim\\Documents\\web\\ts_voc_folder";
+	private String devDefaultPath = "C:\\Users\\eun-su-kim\\Documents\\web\\ts_voc_folder";
 	private String defaultPath = "";
+
+    PostUseService(BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
 
 	/**
 	 * 본문 이미지 조회
@@ -131,6 +139,44 @@ public class PostUseService {
 	}
 
 	/**
+	 * 게시물 수정
+	 * @param param
+	 * @return
+	 */
+	public ComResult<String> updatePost(PUpdatePost param) {
+		ComResult<String> result = new ComResult<String>(param);
+		RSelectUserInfo _userInfo = loginService.getLoginInfo();
+
+		try {
+			PSelectPostInfo pSelectPostInfo = new PSelectPostInfo();
+			pSelectPostInfo.setCompSeq(_userInfo.getCompSeq());
+			pSelectPostInfo.setPostSeq(param.getPostSeq());
+			RSelectPostInfo postInfo = postUseMapper.selectPostInfo(pSelectPostInfo);
+
+			if(postInfo == null || postInfo.getUserSeq().equals("")) {
+				result.setFail("수정할 게시물을 찾을수 없습니다.");
+				return result;
+			}
+			if(!_userInfo.getUserSeq().equals(postInfo.getUserSeq())) {
+				result.setFail("타인의 게시물은 수정할 수 없습니다.");
+				return result;
+			}
+			// [1] 기존 본문 기록 테이블에 저장
+			PInsertPostContentHistory pInsertPostContentHistory = new PInsertPostContentHistory();
+			pInsertPostContentHistory.setPostSeq(param.getPostSeq());
+			pInsertPostContentHistory.setUserSeq(_userInfo.getUserSeq());
+			postUseMapper.insertPostContentHistory(pInsertPostContentHistory);
+			// [2] 게시물 수정 (본문 빼고!)
+			param.setUserSeq(_userInfo.getUserSeq());
+			postUseMapper.updatePost(param);
+			result.setSuccess(param.getPostSeq());
+		} catch(Exception ex) {
+			result.setError(ex);
+		}
+		return result;
+	}
+
+	/**
 	 * 본문 이미지 저장
 	 */
 	public ComResult<Map<String, String>> uploadContentImg(List<MultipartFile> contentImgList, String postSeq) {
@@ -192,11 +238,12 @@ public class PostUseService {
 	 * @param postSeq
 	 * @return
 	 */
-	public ComResult<Boolean> uploadAttach(List<MultipartFile> attachList, String postSeq) {
+	public ComResult<Boolean> uploadAttach(List<MultipartFile> attachList, String postSeq, String postAttachSeqs) {
 		ComResult<Boolean> result = new ComResult<Boolean>();
 		RSelectUserInfo _userInfo = loginService.getLoginInfo();
 
 		try {
+			List<String> postAttachSeqList = new ArrayList<>();
 	        for(MultipartFile file : attachList) {
 	        	String uuid = UUID.randomUUID().toString();
 	        	String ext = file.getOriginalFilename().split("\\.")[1];
@@ -237,6 +284,19 @@ public class PostUseService {
                 pInsertPostAttach.setSavePath(savePath);
                 pInsertPostAttach.setType(type);
                 postUseMapper.insertPostAttach(pInsertPostAttach);
+                postAttachSeqList.add(pInsertPostAttach.getPostAttachSeq());
+	        }
+
+	        // 안쓰는 첨부파일 삭제
+	        if(postAttachSeqs != null && !postAttachSeqs.equals("")) {
+	        	String[] tempSeqList = postAttachSeqs.split(",");
+	        	for(String postAttachSeq : tempSeqList) {
+	        		postAttachSeqList.add(postAttachSeq);
+	        	}
+	        	PDeletePostAttach pDeletePostAttach = new PDeletePostAttach();
+	        	pDeletePostAttach.setPostSeq(postSeq);
+	        	pDeletePostAttach.setPostAttachSeqList(postAttachSeqList);
+	        	postUseMapper.deletePostAttach(pDeletePostAttach);
 	        }
 
 	        result.setSuccess(true);
@@ -267,6 +327,55 @@ public class PostUseService {
 			}
 			innerResult.setAttachList(postUseMapper.selectPostAttachList(param));
 			result.setSuccess(innerResult);
+		} catch(Exception ex) {
+			result.setError(ex);
+		}
+
+		return result;
+	}
+
+	/**
+	 * 게시물 삭제
+	 * @param param
+	 * @return
+	 */
+	public ComResult<Integer> updatePostDelYn(PUpdatePostDelYn param) {
+		ComResult<Integer> result = new ComResult<>(param);
+		RSelectUserInfo _userInfo = loginService.getLoginInfo();
+
+		try {
+			PSelectPostInfo pSelectPostInfo = new PSelectPostInfo();
+			pSelectPostInfo.setCompSeq(_userInfo.getCompSeq());
+			pSelectPostInfo.setPostSeq(param.getPostSeq());
+			RSelectPostInfo postInfo = postUseMapper.selectPostInfo(pSelectPostInfo);
+
+			if(postInfo == null || postInfo.getUserSeq().equals("")) {
+				result.setFail("삭제할 게시물을 찾을수 없습니다.");
+				return result;
+			}
+			if(!_userInfo.getUserSeq().equals(postInfo.getUserSeq())) {
+				result.setFail("타인의 게시물은 삭제할 수 없습니다.");
+				return result;
+			}
+			param.setUserSeq(_userInfo.getUserSeq());
+			result.setSuccess(postUseMapper.updatePostDelYn(param));
+		} catch(Exception ex) {
+			result.setError(ex);
+		}
+
+		return result;
+	}
+
+	/**
+	 * 게시물 회신 조회
+	 * @param param
+	 * @return
+	 */
+	public ComResult<RSelectPostComment> selectPostComment(PSelectPostComment param) {
+		ComResult<RSelectPostComment> result = new ComResult<>(param);
+
+		try {
+			result.setSuccess(postUseMapper.selectPostComment(param));
 		} catch(Exception ex) {
 			result.setError(ex);
 		}

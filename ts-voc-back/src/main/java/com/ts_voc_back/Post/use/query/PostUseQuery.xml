@@ -34,6 +34,44 @@
 		)
 	</insert>
 
+	<update id="updatePost"
+			parameterType="com.ts_voc_back.Post.use.model.param.PUpdatePost"
+	>
+		/* updatePost */
+		UPDATE t_post
+		SET
+			module_seq		= #{moduleSeq}
+			, module_name	= #{moduleName}
+			, sn_no			= #{snNo}
+			, title			= #{title}
+			, modify_seq	= #{userSeq}
+
+		WHERE	post_seq	= #{postSeq}
+	</update>
+
+	<insert id="insertPostContentHistory"
+			parameterType="com.ts_voc_back.Post.use.model.param.PInsertPostContentHistory"
+	>
+		/* insertPostContentHistory */
+		INSERT INTO t_post_content_history (
+			post_seq
+			, comp_seq
+			, user_seq
+			, content
+			, create_seq
+			, modify_seq
+		)
+		SELECT
+			post_seq
+			, comp_seq
+			, user_seq
+			, content
+			, #{userSeq}
+			, #{userSeq}
+		FROM	t_post
+		WHERE	post_seq	= #{postSeq}
+	</insert>
+
 	<update id="updatePostContent"
 			parameterType="com.ts_voc_back.Post.use.model.param.PInsertPost"
 	>
@@ -46,6 +84,9 @@
 
 	<insert id="insertPostAttach"
 			parameterType="com.ts_voc_back.Post.use.model.param.PInsertPostAttach"
+			useGeneratedKeys="true"
+			keyProperty="postAttachSeq"
+			keyColumn="post_attach_seq"
 	>
 		/* insertPostAttach */
 		INSERT INTO t_post_attach (
@@ -74,6 +115,19 @@
 			, #{userSeq}
 		)
 	</insert>
+
+	<delete id="deletePostAttach"
+			parameterType="com.ts_voc_back.Post.use.model.param.PDeletePostAttach"
+	>
+		/* deletePostAttach */
+		DELETE FROM t_post_attach
+		WHERE	post_seq	= #{postSeq}
+		 AND	post_attach_seq	NOT IN (
+			<foreach collection="postAttachSeqList" item="item" separator=",">
+				#{item}
+			</foreach>
+		 )
+	</delete>
 
 	<select id="selectAttachInfo"
 			parameterType="com.ts_voc_back.Post.use.model.param.PSelectAttachInfo"
@@ -125,6 +179,36 @@
 		FROM	t_post_attach
 		WHERE	comp_seq	= #{compSeq}
 		 AND	post_seq	= #{postSeq}
+	</select>
+
+	<update id="updatePostDelYn"
+			parameterType="com.ts_voc_back.Post.use.model.param.PUpdatePostDelYn"
+	>
+		/* updatePostDelYn */
+		UPDATE t_post
+		SET
+			del_yn			= 'Y'
+			, modify_seq	= #{userSeq}
+		WHERE	post_seq	= #{postSeq}
+	</update>
+
+	<select id="selectPostComment"
+			parameterType="com.ts_voc_back.Post.use.model.param.PSelectPostComment"
+			resultType="com.ts_voc_back.Post.use.model.result.RSelectPostComment"
+	>
+		/* selectPostComment */
+		SELECT
+			tu.user_name	AS userName
+			, tc.comment	AS content
+			, DATE_FORMAT(tc.create_dt, '%Y-%m-%d') AS createDt
+
+		FROM	t_post_comment tc
+
+		INNER JOIN t_user tu
+		ON	tc.user_seq	= tu.user_seq
+
+		WHERE	tc.post_seq	= #{postSeq}
+		 AND	tc.del_yn	= 'N'
 	</select>
 </mapper>
 

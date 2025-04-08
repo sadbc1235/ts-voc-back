@@ -7,33 +7,19 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class PInsertPost {
+public class PUpdatePost {
 	private String postSeq;
-	private String compSeq;
-	private String userSeq;
 	private String snNo;
 	private String moduleSeq;
 	private String moduleName;
 	private String title;
-	private String content;
+	private String userSeq;
 
 	public String getPostSeq() {
 		return postSeq;
 	}
 	public void setPostSeq(String postSeq) {
 		this.postSeq = postSeq;
-	}
-	public String getCompSeq() {
-		return compSeq;
-	}
-	public void setCompSeq(String compSeq) {
-		this.compSeq = compSeq;
-	}
-	public String getUserSeq() {
-		return userSeq;
-	}
-	public void setUserSeq(String userSeq) {
-		this.userSeq = userSeq;
 	}
 	public String getSnNo() {
 		return snNo;
@@ -59,10 +45,10 @@ public class PInsertPost {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public String getContent() {
-		return content;
+	public String getUserSeq() {
+		return userSeq;
 	}
-	public void setContent(String content) {
-		this.content = content;
+	public void setUserSeq(String userSeq) {
+		this.userSeq = userSeq;
 	}
 }

@@ -11,6 +11,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class PInsertPostAttach {
+	private String postAttachSeq;
 	private String postSeq;
 	private String compSeq;
 	private String userSeq;
@@ -21,6 +22,12 @@ public class PInsertPostAttach {
 	private String savePath;
 	private String type;
 
+	public String getPostAttachSeq() {
+		return postAttachSeq;
+	}
+	public void setPostAttachSeq(String postAttachSeq) {
+		this.postAttachSeq = postAttachSeq;
+	}
 	public String getPostSeq() {
 		return postSeq;
 	}

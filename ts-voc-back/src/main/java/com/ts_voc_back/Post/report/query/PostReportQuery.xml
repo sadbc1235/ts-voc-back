@@ -38,5 +38,7 @@
 			OR
 			DATE_FORMAT(tp.create_dt, '%Y-%m-%d')	LIKE CONCAT('%', #{searchStr} , '%')
 		 )
+
+		 ORDER BY tp.sn_no ASC
 	</select>
 </mapper>
