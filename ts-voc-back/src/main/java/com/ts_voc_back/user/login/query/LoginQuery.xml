@@ -7,15 +7,42 @@
 			resultType="com.ts_voc_back.user.login.model.result.RSelectUserInfo"
 	>
 		SELECT
-			user_seq	AS userSeq
-			, comp_seq	AS compSeq
-			, login_id	AS loginId
-			, user_name	AS userName
-			, pwd
-			, email
-			, role
-			, allow_yn	AS allowYn
-		FROM	t_user
+			tu.user_seq		AS userSeq
+			, tu.comp_seq	AS compSeq
+			, tc.comp_name	AS compName
+			, tu.login_id	AS loginId
+			, tu.user_name	AS userName
+			, tu.pwd		AS pwd
+			, tu.email		AS email
+			, tu.role		AS role
+			, tu.allow_yn	AS allowYn
+		FROM	t_user		tu
+
+		INNER JOIN t_comp	tc
+		ON	tu.comp_seq	= tc.comp_seq
+
 		WHERE	login_id	= #{loginId}
 	</select>
+
+	<update id="updateUser"
+			parameterType="com.ts_voc_back.user.login.model.param.PUpdateUser"
+	>
+		/* updateUser */
+		UPDATE t_user
+		SET
+			user_name	= #{userName}
+			, email		= #{email}
+		WHERE	user_seq	= #{userSeq}
+	</update>
+
+	<update id="updateUserPwd"
+			parameterType="com.ts_voc_back.user.login.model.param.PUpdateUserPwd"
+	>
+		/* updateUserPwd */
+		UPDATE t_user
+		SET
+			pwd	= #{pwd}
+
+		WHERE	user_seq	= #{userSeq}
+	</update>
 </mapper>

@@ -14,10 +14,16 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ts_voc_back.Post.use.model.param.PUpdatePost;
 import com.ts_voc_back.common.model.ComResult;
+import com.ts_voc_back.user.login.model.param.PUpdateUser;
+import com.ts_voc_back.user.login.model.result.RSelectUserInfo;
 import com.ts_voc_back.user.login.service.LoginService;
 
 import jakarta.servlet.http.Cookie;
@@ -68,5 +74,38 @@ public class LoginController {
 
 		result.setFail(errorMsg);
         return result;
+    }
+
+	/**
+	 * 사용자 정보 조회
+	 * @return
+	 */
+	@PostMapping("/api/user/selectUserInfo")
+    @ResponseBody
+    public ComResult<RSelectUserInfo> updatePost() {
+		ComResult<RSelectUserInfo> result = new ComResult<>();
+		RSelectUserInfo innerResult = new RSelectUserInfo();
+		try {
+			innerResult = loginService.getLoginInfo();
+			innerResult.setUserSeq("");
+			innerResult.setPwd("");
+			innerResult.setRole("");
+			innerResult.setAllowYn("");
+			result.setSuccess(innerResult);
+		} catch(Exception ex) {
+			result.setError(ex);
+		}
+        return result;
+    }
+
+	/**
+	 * 사용자 정보 수정
+	 * @param param
+	 * @return
+	 */
+	@PostMapping("/api/user/updateUser")
+    @ResponseBody
+    public ComResult<Integer> updateUser(@RequestBody PUpdateUser param) {
+        return loginService.updateUser(param);
     }
 }

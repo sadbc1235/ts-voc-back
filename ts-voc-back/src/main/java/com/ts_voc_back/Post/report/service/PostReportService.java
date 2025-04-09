@@ -26,12 +26,15 @@ public class PostReportService {
 	 * @return
 	 */
 	public ComResult<RSelectPostList> selectPostList(PSelectPostList param) {
-		ComResult<RSelectPostList> result = new ComResult<>(param);
+		ComResult<RSelectPostList> result = new ComResult<>();
 		RSelectUserInfo _userInfo = loginService.getLoginInfo();
 
 		try {
 			param.setCompSeq(_userInfo.getCompSeq());
-			param.setUserSeq(_userInfo.getUserSeq());
+			if(param.getType() != null && !param.getType().equals("")) {
+				param.setUserSeq(_userInfo.getUserSeq());
+			}
+
 			result.setSuccess(postReportMapper.selectPostList(param));
 		} catch(Exception ex) {
 

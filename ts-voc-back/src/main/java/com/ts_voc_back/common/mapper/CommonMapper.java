@@ -5,9 +5,8 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.ts_voc_back.Post.use.model.param.PInsertPost;
-import com.ts_voc_back.common.model.param.PSelectModuleList;
-import com.ts_voc_back.common.model.result.RSelectModuleList;
+import com.ts_voc_back.common.model.param.*;
+import com.ts_voc_back.common.model.result.*;
 
 @Mapper
 public interface CommonMapper {
@@ -19,4 +18,11 @@ public interface CommonMapper {
 	 * @throws Exception
 	 */
 	List<RSelectModuleList> selectModuleList(PSelectModuleList param) throws Exception;
+
+	/**
+	 * 회사 리스트 조회
+	 * @return
+	 * @throws Exception
+	 */
+	List<RSelectCompList> selectCompList() throws Exception;
 }

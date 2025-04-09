@@ -3,8 +3,8 @@ package com.ts_voc_back.user.login.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.ts_voc_back.user.login.model.param.PSelectUserInfo;
-import com.ts_voc_back.user.login.model.result.RSelectUserInfo;
+import com.ts_voc_back.user.login.model.param.*;
+import com.ts_voc_back.user.login.model.result.*;
 
 @Mapper
 public interface LoginMapper {
@@ -16,5 +16,21 @@ public interface LoginMapper {
 	 * @throws Exception
 	 */
 	RSelectUserInfo selectUserInfo(PSelectUserInfo param) throws Exception;
+
+	/**
+	 * 사용자 정보 수정
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	int updateUser(PUpdateUser param) throws Exception;
+
+	/**
+	 * 사용자 비밀번호 수정
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	int updateUserPwd(PUpdateUserPwd param) throws Exception;
 
 }

@@ -12,4 +12,15 @@
 		FROM	t_module
 		WHERE	comp_seq	= #{compSeq}
 	</select>
+
+	<select id="selectCompList"
+			resultType="com.ts_voc_back.common.model.result.RSelectCompList"
+	>
+		/* selectCompList */
+		SELECT
+			comp_seq	AS compSeq
+			, comp_name AS compName
+		FROM	t_comp
+		WHERE	comp_seq != '1'
+	</select>
 </mapper>

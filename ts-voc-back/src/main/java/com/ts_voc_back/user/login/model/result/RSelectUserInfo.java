@@ -10,6 +10,7 @@ import lombok.ToString;
 public class RSelectUserInfo {
 	private String userSeq;
 	private String compSeq;
+	private String compName;
 	private String loginId;
 	private String userName;
 	private String pwd;
@@ -28,6 +29,12 @@ public class RSelectUserInfo {
 	}
 	public void setCompSeq(String compSeq) {
 		this.compSeq = compSeq;
+	}
+	public String getCompName() {
+		return compName;
+	}
+	public void setCompName(String compName) {
+		this.compName = compName;
 	}
 	public String getLoginId() {
 		return loginId;

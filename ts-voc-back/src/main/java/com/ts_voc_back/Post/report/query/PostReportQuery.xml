@@ -24,6 +24,9 @@
 
 		WHERE	tp.del_yn	= 'N'
 		 AND	tp.comp_seq	= #{compSeq}
+		 <if test='userSeq != null and !userSeq.equals("")'>
+		 AND	tp.user_seq	= #{userSeq}
+		 </if>
 		 <if test='moduleSeq != null and !moduleSeq.equals("0")'>
 		 AND	tp.module_seq	= #{moduleSeq}
 		 </if>
@@ -39,6 +42,6 @@
 			DATE_FORMAT(tp.create_dt, '%Y-%m-%d')	LIKE CONCAT('%', #{searchStr} , '%')
 		 )
 
-		 ORDER BY tp.sn_no ASC
+		 ORDER BY tp.sn_no ASC, tp.create_dt DESC
 	</select>
 </mapper>

@@ -15,6 +15,7 @@ public class PSelectPostList {
 	private String userSeq;
 	private String moduleSeq;
 	private String searchStr;
+	private String type;
 
 	public String getCompSeq() {
 		return compSeq;
@@ -39,5 +40,11 @@ public class PSelectPostList {
 	}
 	public void setSearchStr(String searchStr) {
 		this.searchStr = searchStr;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 }
