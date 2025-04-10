@@ -9,6 +9,7 @@
 		SELECT
 			module_seq		AS moduleSeq
 			, module_name	AS moduleName
+			-- , comp_seq		AS compSeq
 		FROM	t_module
 		WHERE	comp_seq	= #{compSeq}
 	</select>

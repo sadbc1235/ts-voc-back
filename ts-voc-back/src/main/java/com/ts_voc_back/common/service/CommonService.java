@@ -26,13 +26,14 @@ public class CommonService {
 	 * @param param
 	 * @return
 	 */
-	public ComResult<RSelectModuleList> selectModuleList() {
-		PSelectModuleList param = new PSelectModuleList();
+	public ComResult<RSelectModuleList> selectModuleList(PSelectModuleList param) {
 		ComResult<RSelectModuleList> result = new ComResult<RSelectModuleList>(param);
 		RSelectUserInfo _userInfo = loginService.getLoginInfo();
 
 		try {
-			param.setCompSeq(_userInfo.getCompSeq());
+			if(param == null || param.getCompSeq() == null || param.getCompSeq().equals("")) {
+				param.setCompSeq(_userInfo.getCompSeq());
+			}
 			result.setSuccess(commonMapper.selectModuleList(param));
 		} catch(Exception ex) {
 			result.setError(ex);

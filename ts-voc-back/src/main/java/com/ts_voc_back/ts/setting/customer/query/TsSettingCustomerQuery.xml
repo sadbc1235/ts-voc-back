@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ts_voc_back.ts.setting.customer.mapper.TsSettingCustomerMapper">
+	<insert id="insertCompList"
+			parameterType="com.ts_voc_back.ts.setting.customer.model.param.PInsertCompList"
+	>
+		/* insertCompList */
+		INSERT INTO t_comp (
+			comp_name
+		)	VALUES
+		<foreach collection="addCompList" item="item" separator=",">
+			(#{item.compName})
+		</foreach>
+	</insert>
+
+	<update id="updateComp"
+			parameterType="com.ts_voc_back.ts.setting.customer.model.param.PUpdateComp"
+	>
+		/* updateComp */
+		UPDATE t_comp
+		SET
+			comp_name		= #{compName}
+		WHERE	comp_seq	= #{compSeq}
+	</update>
+
+	<delete id="deleteComp"
+			parameterType="com.ts_voc_back.ts.setting.customer.model.param.PDeleteComp"
+	>
+		/* deleteComp */
+		DELETE FROM t_comp
+		WHERE	comp_seq	= #{compSeq}
+	</delete>
+
+	<insert id="insertModuleList"
+			parameterType="com.ts_voc_back.ts.setting.customer.model.param.PInsertModuleList"
+	>
+		/* insertModuleList */
+		INSERT INTO t_module (
+			module_name
+			, comp_seq
+		)	VALUES
+		<foreach collection="addModuleList" item="item" separator=",">
+			(
+				#{item.moduleName}
+				, #{compSeq}
+			)
+		</foreach>
+	</insert>
+
+	<update id="updateModule"
+			parameterType="com.ts_voc_back.ts.setting.customer.model.param.PUpdateModule"
+	>
+		/* updateModule */
+		UPDATE t_module
+		SET
+			module_name		= #{moduleName}
+		WHERE	module_seq	= #{moduleSeq}
+	</update>
+
+	<delete id="deleteModule"
+			parameterType="com.ts_voc_back.ts.setting.customer.model.param.PDeleteModule"
+	>
+		/* deleteModule */
+		DELETE FROM t_module
+		WHERE	module_seq	= #{moduleSeq}
+	</delete>
+</mapper>

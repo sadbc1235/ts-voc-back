@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ts_voc_back.ts.setting.emp.mapper.TsSettingEmpMapper">
+
+	<insert id="insertTsUser"
+			parameterType="com.ts_voc_back.ts.setting.emp.model.param.PInsertTsUser"
+	>
+		/* insertTsUser */
+		INSERT INTO t_user (
+			comp_seq
+			, login_id
+			, user_name
+			, pwd
+			, email
+			, role
+		) VALUES (
+			'1'
+			, #{loginId}
+			, #{userName}
+			, #{pwd}
+			, 'test@test.com'
+			, 'ROLE_ADMIN'
+		)
+	</insert>
+
+	<select id="selectTsUserList"
+			resultType="com.ts_voc_back.ts.setting.emp.model.result.RSelectTsUserList"
+	>
+		/* selectTsUserList */
+		SELECT
+			user_seq	AS userSeq
+			, user_name	AS userName
+		FROM	t_user
+		WHERE	comp_seq	= '1'
+	</select>
+</mapper>

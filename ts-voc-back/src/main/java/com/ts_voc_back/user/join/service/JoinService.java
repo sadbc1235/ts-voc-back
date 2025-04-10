@@ -114,7 +114,7 @@ public class JoinService {
 			if(
 					validationParam.checkSqlExp(pInsertUser.getLoginId())
 			) {
-				result.setFail("해당 특수문자는 입력이 불가능합니다.\\n( ex : &, <, >, `, \", \\', ;, /, (, ), * )");
+				result.setFail("해당 특수문자는 입력이 불가능합니다.\\n( ex : &, <, >, `, \", ', ;, /, (, ), * )");
 				return result;
 			}
 
