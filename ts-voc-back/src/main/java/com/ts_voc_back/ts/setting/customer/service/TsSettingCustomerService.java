@@ -1,5 +1,6 @@
 package com.ts_voc_back.ts.setting.customer.service;
 
+import java.io.File;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ public class TsSettingCustomerService {
 
 	@Autowired
 	final TsSettingCustomerMapper tsSettingCustomerMapper = null;
+	private String devDefaultPath = "C:/Users/eun_su_kim/Documents/web/ts_voc_folder";
 
 	/**
 	 * 회사 추가
@@ -28,6 +30,30 @@ public class TsSettingCustomerService {
 
 		try {
 			tsSettingCustomerMapper.insertCompList(param);
+			for(Map<String, String> compInfo : param.getAddCompList()) {
+				String savePath = devDefaultPath+"/"+ compInfo.get("compName");
+				File uploadPath = new File(savePath);
+				// 회사 폴더 생성
+		        if(uploadPath.exists() == false) {
+		            uploadPath.mkdir();
+		        }
+		        // 회사 관련 폴더 생성
+		        File compUploadPath = new File((savePath+"/comp"));
+		        if(compUploadPath.exists() == false) {
+		        	compUploadPath.mkdir();
+		        }
+		        // 게시물 이미지 업로드 폴더 생성
+		        File imgUploadPath = new File((savePath+"/content_img"));
+		        if(imgUploadPath.exists() == false) {
+		        	imgUploadPath.mkdir();
+		        }
+		        // 게시물 첨부파일 업로드 폴더 생성
+		        File attachUploadPath = new File((savePath+"/content_attach"));
+		        if(attachUploadPath.exists() == false) {
+		        	attachUploadPath.mkdir();
+		        }
+			}
+
 			result.setSuccess(0);
 		} catch(Exception ex) {
 			result.setError(ex);

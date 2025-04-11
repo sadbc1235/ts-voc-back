@@ -41,7 +41,7 @@ public class PostUseService {
 	@Autowired
 	final LoginService loginService = null;
 
-	private String devDefaultPath = "C:\\Users\\eun_su_kim\\Documents\\web\\ts_voc_folder";
+	private String devDefaultPath = "C:/Users/eun_su_kim/Documents/web/ts_voc_folder";
 //	private String devDefaultPath = "C:\\Users\\eun-su-kim\\Documents\\web\\ts_voc_folder";
 	private String defaultPath = "";
 
@@ -56,9 +56,10 @@ public class PostUseService {
 	 * @return
 	 */
 	public ResponseEntity<byte[]> displayImg(String postSeq, String filepath, String filename) {
+		RSelectUserInfo _userInfo = loginService.getLoginInfo();
 
 		//파일이 저장된 경로
-		String savename = devDefaultPath+"\\content_img\\"+postSeq+"\\"+filepath+"\\"+filename;
+		String savename = devDefaultPath+"/"+ _userInfo.getCompName() +"/content_img/"+postSeq+"/"+filepath+"/"+filename;
 		File file = new File(savename);
 
 		//저장된 이미지파일의 이진데이터 형식을 구함
@@ -181,6 +182,7 @@ public class PostUseService {
 	 */
 	public ComResult<Map<String, String>> uploadContentImg(List<MultipartFile> contentImgList, String postSeq) {
 		ComResult<Map<String, String>> result = new ComResult<Map<String, String>>();
+		RSelectUserInfo _userInfo = loginService.getLoginInfo();
 		Map<String, String> urlMap = new HashMap<>();
 		try {
 
@@ -188,13 +190,17 @@ public class PostUseService {
 	        	// 저장할 폴더명을 uuid로 생성
 	        	String uuid = UUID.randomUUID().toString();
 	        	// 저장할 폴더 경로
-				String savePath = devDefaultPath+"\\content_img\\"+postSeq;
+				String savePath = devDefaultPath+"/"+ _userInfo.getCompName() +"/content_img";
 				File uploadPath = new File(savePath);
 				// 해당경로에 폴더가 없으면 생성
 		        if(uploadPath.exists() == false) {
 		            uploadPath.mkdir();
 		        }
-		        uploadPath = new File((savePath+"\\"+uuid));
+		        uploadPath = new File((savePath+"/"+postSeq));
+		        if(uploadPath.exists() == false) {
+		            uploadPath.mkdir();
+		        }
+		        uploadPath = new File((savePath+"/"+uuid));
 		        if(uploadPath.exists() == false) {
 		            uploadPath.mkdir();
 		        }
@@ -254,14 +260,14 @@ public class PostUseService {
 
 	        	// [1] 파일 저장
 	        	// 저장할 폴더 경로
-				String savePath = devDefaultPath+"\\content_attach\\"+postSeq;
+				String savePath = devDefaultPath+"/"+ _userInfo.getCompName() +"/content_attach/"+postSeq;
 				File uploadPath = new File(savePath);
 				// 해당경로에 폴더가 없으면 생성
 		        if(uploadPath.exists() == false) {
 		            uploadPath.mkdir();
 		        }
 		        // 저장할 폴더명을 uuid로 생성
-		        savePath +=  "\\"+uuid;
+		        savePath +=  "/"+uuid;
 		        uploadPath = new File(savePath);
 		        if(uploadPath.exists() == false) {
 		            uploadPath.mkdir();
